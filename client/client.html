@@ -5,7 +5,139 @@
   <link rel="stylesheet" type="text/css" href="/style.css">
   
   <script>
+    //3
+    const handleResponse = async (response) =>
+    {
 
+      response.clone().text().then((resText) =>
+      {
+        const content = document.querySelector("#content");
+    
+        const contentType = response.headers.get('Content-Type');
+
+        if(contentType === 'text/xml')
+        {
+          const parsedResponse = new window.DOMParser().parseFromString(resText, 'text/xml');
+          switch(response.status)
+          {
+            case 200: //Success
+              content.innerHTML = `<b>Success</b>`;
+              break;
+            case 400: //Bad Request
+              content.innerHTML = `<b>Bad Request</b>`;
+              break;
+            case 401: //Unauthorized
+              content.innerHTML = `<b>Stop! You have violated the law (Unauthorized)!</b>`;
+              break;
+            case 403: //Forbidden
+              content.innerHTML = `<b>Forbidden</b>`;
+              break;
+            case 404: //Not Found
+              content.innerHTML = `<b>Not Found</b>`;
+              break;
+            case 500: //Internal
+              content.innerHTML = `<b>Internal Server Error</b>`;
+              break;
+            case 501: //Not Implemented
+              content.innerHTML = `<b>Not Implemented</b>`;
+              break;
+            default: //Anything Else
+              content.innerHTML = `<p>Status Code not Implemented By Client</p>`;
+              break;
+          }
+          content.innerHTML += `<p>${parsedResponse.querySelector('message').textContent}</p>`;
+          return;
+        }
+      });
+
+      switch(response.status)
+      {
+        case 200: //Success
+          content.innerHTML = `<b>Success</b>`;
+          break;
+        case 400: //Bad Request
+          content.innerHTML = `<b>Bad Request</b>`;
+          break;
+        case 401: //Unauthorized
+          content.innerHTML = `<b>Stop! You have violated the law (Unauthorized)!</b>`;
+          break;
+        case 403: //Forbidden
+          content.innerHTML = `<b>Forbidden</b>`;
+          break;
+        case 404: //Not Found
+          content.innerHTML = `<b>Not Found</b>`;
+          break;
+        case 500: //Internal
+          content.innerHTML = `<b>Internal Server Error</b>`;
+          break;
+        case 501: //Not Implemented
+          content.innerHTML = `<b>Not Implemented</b>`;
+          break;
+        default: //Anything Else
+          content.innerHTML = `<p>Status Code not Implemented By Client</p>`;
+          break;
+      }
+
+      let resObj = await response.json();
+
+      content.innerHTML += `<p>${resObj.message}</p>`;
+
+      
+
+      //response.text().then((resText) =>
+      //{
+      //  const contentType = response.headers.get('Content-Type');
+//
+      //  content.appendChild(document.createElement('hr')); 
+//
+      //  const h1 = document.createElement('h1');
+      //  const p = document.createElement('p');
+      //  const h2 = document.createElement('h2');
+      //  const rawData = document.createElement('p');
+//
+      //  h2.textContent = contentType;
+      //  rawData.textContent = resText;
+//
+      //  if(contentType === 'application/json')
+      //  {
+      //    const parsedResponse = JSON.parse(resText);
+      //    h1.textContent = `Name: `
+      //  }
+      //});
+    };
+    //2
+    const sendFetch = async (url, type) =>
+    {
+      console.log("button clicked");
+      const options =
+      {
+        method: 'GET',
+        headers: {'Accept': type},
+      };
+      let response = await fetch(url, options);
+      //console.log(response);
+      handleResponse(response);
+    };
+    //1
+    const init = () => 
+    {
+      const sendButton = document.querySelector("#send");
+      let pageContent = document.querySelector("#page").value;
+      let pageType = document.querySelector("#type").value;
+
+      const send = () => 
+      {
+        pageContent = document.querySelector("#page").value;
+        pageType = document.querySelector("#type").value;
+        sendFetch(pageContent, pageType);
+      }
+
+      //using the sendFetch function in the addEventListener isnt working
+      sendButton.addEventListener('click', send);
+      //console.log(pageContent);
+    };
+
+    window.onload = init;
   </script>
 </head>
 <body>
